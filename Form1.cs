@@ -24,28 +24,99 @@ namespace Graphis
         private bool flagLine = false;
         private bool krutoiFlag = false;
         private bool delete = false;
+        private bool h = false;
         Point startChoice;
         Line line = new Line();
         Graphics g;
         Bitmap buffer;
         Matrix m1 = new Matrix(2, 4);
         Matrix m2 = new Matrix(4, 4);
-
-
+        Matrix t = new Matrix(4, 4);
+        Matrix j = new Matrix(2, 4);
         int x;
 
         public void Paint(Line x)
         {
-            g.DrawLine(new Pen(Color.Black, 3), x.Start.X, x.Start.Y, x.End.X, x.End.Y);
-            g.DrawLine(new Pen(Color.Red, 6), x.Start.X - 3, x.Start.Y, x.Start.X + 3, x.Start.Y);
-            if (x.MidSelected)
-                g.DrawLine(new Pen(Color.Blue, 6), Math.Abs(x.End.X + x.Start.X) / 2 - 3, Math.Abs(x.End.Y + x.Start.Y) / 2, Math.Abs(x.End.X + x.Start.X) / 2 + 3, Math.Abs(x.End.Y + x.Start.Y) / 2);
+            if (!h)
+            {
+                g.DrawLine(new Pen(Color.Black, 1), 0, 228, 1038, 228);
+                g.DrawLine(new Pen(Color.Black, 1), 1038, 228, 1018, 218);
+                g.DrawLine(new Pen(Color.Black, 1), 1038, 228, 1018, 238);
+                g.DrawLine(new Pen(Color.Black, 1), 519, 0, 519, 456);
+                g.DrawLine(new Pen(Color.Black, 1), 519, 0, 509, 20);
+                g.DrawLine(new Pen(Color.Black, 1), 519, 0, 529, 20);
+                g.DrawLine(new Pen(Color.Black, 3), x.Start.X, x.Start.Y, x.End.X, x.End.Y);
+                g.DrawLine(new Pen(Color.Red, 6), x.Start.X - 3, x.Start.Y, x.Start.X + 3, x.Start.Y);
+                if (x.MidSelected)
+                    g.DrawLine(new Pen(Color.Blue, 6), Math.Abs(x.End.X + x.Start.X) / 2 - 3, Math.Abs(x.End.Y + x.Start.Y) / 2, Math.Abs(x.End.X + x.Start.X) / 2 + 3, Math.Abs(x.End.Y + x.Start.Y) / 2);
+                else
+                    g.DrawLine(new Pen(Color.ForestGreen, 6), Math.Abs(x.End.X + x.Start.X) / 2 - 3, Math.Abs(x.End.Y + x.Start.Y) / 2, Math.Abs(x.End.X + x.Start.X) / 2 + 3, Math.Abs(x.End.Y + x.Start.Y) / 2);
+                g.DrawLine(new Pen(Color.Orange, 6), x.End.X, x.End.Y - 3, x.End.X, x.End.Y + 3);
+            }
+
             else
-                g.DrawLine(new Pen(Color.ForestGreen, 6), Math.Abs(x.End.X + x.Start.X) / 2 - 3, Math.Abs(x.End.Y + x.Start.Y) / 2, Math.Abs(x.End.X + x.Start.X) / 2 + 3, Math.Abs(x.End.Y + x.Start.Y) / 2);
-            g.DrawLine(new Pen(Color.Red, 6), x.End.X, x.End.Y - 3, x.End.X, x.End.Y + 3);
+            {
+                Line y = new Line();
+                double d = -1000;
+                y.Start.X = x.Start.X;
+                y.Start.Y = x.Start.Y;
+                y.End.X = x.End.X;
+                y.End.Y = x.End.Y;
+                y.StartZ = x.StartZ;
+                y.EndZ = x.EndZ;
+                y.EndOK = x.EndOK;
+                y.StartOK = x.StartOK;
 
+                j[0, 0] = y.Start.X - 519;
+                j[0, 1] = -y.Start.Y + 228;
+                j[0, 2] = y.StartZ;
+                j[0, 3] = y.StartOK;
+                j[1, 0] = y.End.X - 519;
+                j[1, 1] = -y.End.Y + 228;
+                j[1, 2] = y.EndZ;
+                j[1, 3] = y.EndOK;
 
-            
+                t[0, 0] = 1;
+                t[0, 1] = 0;
+                t[0, 2] = 0;
+                t[0, 3] = 0;
+                t[1, 0] = 0;
+                t[1, 1] = 1;
+                t[1, 2] = 0;
+                t[1, 3] = 0;
+                t[2, 0] = 0;
+                t[2, 1] = 0;
+                t[2, 2] = 1;
+                t[2, 3] = -1 / d;
+                t[3, 0] = 0;
+                t[3, 1] = 0;
+                t[3, 2] = 0;
+                t[3, 3] = 1;
+                
+                j = j * t;
+                
+                y.Start.X = Convert.ToInt32(Convert.ToDouble(j[0, 0]) / Convert.ToDouble(j[0, 3]) + 519);
+                y.Start.Y = Convert.ToInt32(-Convert.ToDouble(j[0, 1]) / Convert.ToDouble(j[0, 3]) + 228);
+                y.StartZ = Convert.ToInt32(Convert.ToDouble(j[0, 2]) / Convert.ToDouble(j[0, 3]));
+
+                y.End.X = Convert.ToInt32(Convert.ToDouble(j[1, 0]) / Convert.ToDouble(j[1, 3]) + 519);
+                y.End.Y = Convert.ToInt32(-Convert.ToDouble(j[1, 1]) / Convert.ToDouble(j[1, 3]) + 228);
+                y.EndZ = Convert.ToInt32(Convert.ToDouble(j[1, 2]) / Convert.ToDouble(j[1, 3]));
+
+                g.DrawLine(new Pen(Color.Black, 1), 0, 228, 1038, 228);
+                g.DrawLine(new Pen(Color.Black, 1), 1038, 228, 1018, 218);
+                g.DrawLine(new Pen(Color.Black, 1), 1038, 228, 1018, 238);
+                g.DrawLine(new Pen(Color.Black, 1), 519, 0, 519, 456);
+                g.DrawLine(new Pen(Color.Black, 1), 519, 0, 509, 20);
+                g.DrawLine(new Pen(Color.Black, 1), 519, 0, 529, 20);
+                g.DrawLine(new Pen(Color.Black, 3), y.Start.X, y.Start.Y, y.End.X, y.End.Y);
+                g.DrawLine(new Pen(Color.Red, 6), y.Start.X - 3, y.Start.Y, y.Start.X + 3, y.Start.Y);
+                if (x.MidSelected)
+                    g.DrawLine(new Pen(Color.Blue, 6), Math.Abs(y.End.X + y.Start.X) / 2 - 3, Math.Abs(y.End.Y + y.Start.Y) / 2, Math.Abs(y.End.X + y.Start.X) / 2 + 3, Math.Abs(y.End.Y + y.Start.Y) / 2);
+                else
+                    g.DrawLine(new Pen(Color.ForestGreen, 6), Math.Abs(y.End.X + y.Start.X) / 2 - 3, Math.Abs(y.End.Y + y.Start.Y) / 2, Math.Abs(y.End.X + y.Start.X) / 2 + 3, Math.Abs(y.End.Y + y.Start.Y) / 2);
+                g.DrawLine(new Pen(Color.Orange, 6), y.End.X, y.End.Y - 3, y.End.X, y.End.Y + 3);
+            }
         }
         public Form1()
         {
@@ -203,13 +274,19 @@ namespace Graphis
                     break;
 
 
-                case Keys.Space:
+                case Keys.ShiftKey:
                     g.Clear(Color.White); // очищаем буфер
                     foreach (var l in lines)
                     {
                         l.MidSelected = false;
                         Paint(l);
                     }
+                    g.DrawLine(new Pen(Color.Black, 1), 0, 228, 1038, 228);
+                    g.DrawLine(new Pen(Color.Black, 1), 1038, 228, 1018, 218);
+                    g.DrawLine(new Pen(Color.Black, 1), 1038, 228, 1018, 238);
+                    g.DrawLine(new Pen(Color.Black, 1), 519, 0, 519, 456);
+                    g.DrawLine(new Pen(Color.Black, 1), 519, 0, 509, 20);
+                    g.DrawLine(new Pen(Color.Black, 1), 519, 0, 529, 20);
                     pictureBox1.Image = buffer; // отображаем буфер на pictureBox
                     break;
 
@@ -236,13 +313,19 @@ namespace Graphis
                     {
                         Paint(l);
                     }
+                    g.DrawLine(new Pen(Color.Black, 1), 0, 228, 1038, 228);
+                    g.DrawLine(new Pen(Color.Black, 1), 1038, 228, 1018, 218);
+                    g.DrawLine(new Pen(Color.Black, 1), 1038, 228, 1018, 238);
+                    g.DrawLine(new Pen(Color.Black, 1), 519, 0, 519, 456);
+                    g.DrawLine(new Pen(Color.Black, 1), 519, 0, 509, 20);
+                    g.DrawLine(new Pen(Color.Black, 1), 519, 0, 529, 20);
                     pictureBox1.Image = buffer; // отображаем буфер на pictureBox
                     break;
 
                 case Keys.Enter:
+                    g.Clear(Color.White); // очищаем буфер
                     foreach (var l in lines)
-                    {
-                        g.Clear(Color.White); // очищаем буфер
+                    {                        
                         if (l.MidSelected && textBox1.Text != "" && textBox2.Text != "" && textBox3.Text != "" && textBox4.Text != "" && textBox5.Text != "" && textBox6.Text != "")
                         {
                             l.Start.X = Convert.ToInt32(textBox1.Text);
@@ -250,10 +333,11 @@ namespace Graphis
                             l.StartZ = Convert.ToInt32(textBox5.Text);
                             l.End.X = Convert.ToInt32(textBox3.Text);
                             l.End.Y = Convert.ToInt32(textBox4.Text);
-                            l.StartZ = Convert.ToInt32(textBox6.Text);
+                            l.EndZ = Convert.ToInt32(textBox6.Text);
                         }
                         Paint(l);
                     }
+
                     pictureBox1.Image = buffer; // отображаем буфер на pictureBox
                     break;
 
@@ -263,7 +347,6 @@ namespace Graphis
 
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
-
             switch (e.KeyCode)
             {
                 case Keys.ControlKey:
@@ -273,23 +356,18 @@ namespace Graphis
             }
 
         }
-
         private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
         {
             
         }
-
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
 
-        }
-        
-
+        }        
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             
         }
-
         private void button5_Click(object sender, EventArgs e)
         {
             g.Clear(Color.White);
@@ -313,22 +391,22 @@ namespace Graphis
             {
                 if (l.MidSelected) 
                 {
-                    m1[0, 0] = l.Start.X;
-                    m1[0, 1] = l.Start.Y;
+                    m1[0, 0] = l.Start.X - 519;
+                    m1[0, 1] = -l.Start.Y + 228;
                     m1[0, 2] = l.StartZ;
                     m1[0, 3] = l.StartOK;
-                    m1[1, 0] = l.End.X;
-                    m1[1, 1] = l.End.Y;
+                    m1[1, 0] = l.End.X - 519;
+                    m1[1, 1] = -l.End.Y + 228;
                     m1[1, 2] = l.EndZ;
                     m1[1, 3] = l.EndOK;
                     m1 = m1 * m2;
 
-                        l.Start.X = Convert.ToInt32(Convert.ToDouble(m1[0, 0]) / Convert.ToDouble(m1[0, 3]));
-                        l.Start.Y = Convert.ToInt32(Convert.ToDouble(m1[0, 1]) / Convert.ToDouble(m1[0, 3]));
+                        l.Start.X = Convert.ToInt32(Convert.ToDouble(m1[0, 0]) / Convert.ToDouble(m1[0, 3]) + 519);
+                        l.Start.Y = Convert.ToInt32(-Convert.ToDouble(m1[0, 1]) / Convert.ToDouble(m1[0, 3]) + 228);
                         l.StartZ = Convert.ToInt32(Convert.ToDouble(m1[0, 2]) / Convert.ToDouble(m1[0, 3]));
                     
-                        l.End.X = Convert.ToInt32(Convert.ToDouble(m1[1, 0]) / Convert.ToDouble(m1[1, 3]));
-                        l.End.Y = Convert.ToInt32(Convert.ToDouble(m1[1, 1]) / Convert.ToDouble(m1[1, 3]));
+                        l.End.X = Convert.ToInt32(Convert.ToDouble(m1[1, 0]) / Convert.ToDouble(m1[1, 3]) + 519);
+                        l.End.Y = Convert.ToInt32(-Convert.ToDouble(m1[1, 1]) / Convert.ToDouble(m1[1, 3]) + 228);
                         l.EndZ = Convert.ToInt32(Convert.ToDouble(m1[1, 2]) / Convert.ToDouble(m1[1, 3]));
                     
                 }
@@ -340,19 +418,30 @@ namespace Graphis
         private void button6_Click(object sender, EventArgs e)
         {
             string json = JsonConvert.SerializeObject(lines);
-                string fileName = "C:\\Users\\Марк\\source\\repos\\Graphis\\line.json";
-                File.WriteAllText(fileName, json);            
+            string f = Convert.ToString(textBox23.Text);
+            string fileName = "C:\\Users\\Марк\\source\\repos\\Graphis\\" + f + ".json";
+            File.WriteAllText(fileName, json);            
         }
 
         private void button7_Click(object sender, EventArgs e)
         {
-            string fileName = "C:\\Users\\Марк\\source\\repos\\Graphis\\line.json";
+            string f = Convert.ToString(textBox23.Text);
+            string fileName = "C:\\Users\\Марк\\source\\repos\\Graphis\\"+ f + ".json";
             string json = File.ReadAllText(fileName);
             lines.Clear();
             lines = JsonConvert.DeserializeObject<List<Line>>(json);
             g.Clear(Color.White);
             foreach (var l in lines)
             Paint(l);
+            pictureBox1.Image = buffer; //отображаем буфер на pictureBox
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            if (h) { h = false; } else { h = true; };
+            g.Clear(Color.White);
+            foreach (var l in lines)
+                Paint(l);
             pictureBox1.Image = buffer; //отображаем буфер на pictureBox
         }
     }
